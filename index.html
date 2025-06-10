@@ -33,32 +33,44 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-        const endpoint = 'https://api.github.com/users/ksbilly';
+    const xhr = new XMLHttpRequest();
+    const endpoint = 'https://api.github.com/users/ksbilly';
 
-        const name = document.getElementById("name");
-        const repos = document.getElementById("repos");
-        const followers = document.getElementById("followers");
-        const following = document.getElementById("following");
-        const link = document.getElementById("link");
-        const avatar = document.getElementById("avatar");
+    xhr.open('GET', endpoint, true);
 
-        fetch(endpoint)
-        .then(function(resposta){
-            return resposta.json();
-        })
-        .then(function(json){
-            name.innerText = json.login;
-            repos.innerText = json.public_repos;
-            followers.innerText = json.followers;
-            following.innerText = json.following;
-            link.href = json.html_url;
-            avatar.src = json.avatar_url;
-        })
-        .catch(function(erro){
-            alert("Ocorreu um erro")
-        })
+    const name = document.getElementById("name");
+    const repos = document.getElementById("repos");
+    const followers = document.getElementById("followers");
+    const following = document.getElementById("following");
+    const link = document.getElementById("link");
+    const avatar = document.getElementById("avatar");
 
-    });
+    xhr.onload = function() {
+        try {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                const resposta = xhr.responseText;
+                const dados = JSON.parse(resposta);
+
+                name.innerText = dados.login;
+                repos.innerText = dados.public_repos;
+                followers.innerText = dados.followers;
+                following.innerText = dados.following;
+                link.href = dados.html_url;
+                avatar.src = dados.avatar_url;
+            } else {
+                console.error("Erro na requisição: " + xhr.status);
+            }
+        } catch (error) {
+            console.error("Erro ao processar os dados:", error);
+        }
+    };
+
+    xhr.onerror = function() {
+        console.error("Erro de rede ao tentar fazer a requisição.");
+    };
+
+    xhr.send();
+});
     </script>
 </body>
 </html>
